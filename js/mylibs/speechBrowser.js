@@ -79,7 +79,7 @@ var speechBrowser = function(){
 			console.log(qStr);
 			if(qStr !== null){
 				
-				console.log(this.similar(qStr,'hello world how are you'));
+				/*everything here should move to a JSON-dictionary*/
 				
 				/*detect if the user is attempting to search for something*/
 				var searchPhrase="search",searchTest = qStr.indexOf(searchPhrase);
@@ -88,24 +88,36 @@ var speechBrowser = function(){
 					/*now let's get everything after search*/
 					var searchQuery = qStr.slice(searchTest+searchPhrase.length, qStr.length);
 					console.log('you searched for:' + searchQuery);
+					this.textToSpeech('you searched for:' + searchQuery);
 					
 				}else{
 				
 				/*if not performing a search check for other shortcuts supported*/
-				switch(qStr){
-					case 'hello':
-						console.log('hello right back at you!');
-						this.textToSpeech('hello right back at you!');
-						break;
-					case 'how is the weather today':
-						console.log('taking you to weather..');
-						this.textToSpeech('the weather is cold today');
-						break;
-					case 'I need some sleep':
-						console.log("i dont think you need any sleep");
-						this.textToSpeech('i dont think you need any sleep');
+				/*all of this logic is currently very dumb. we need proper NLP*/
+				
+				if(this.similar(qStr, 'hello')){
+					console.log('hello right back at you!');
+					this.textToSpeech('hello right back at you!');
 				}
-			}
+				else if(this.similar(qStr, 'how is the weather today') || this.similar(qStr, 'how is the weather') || this.similar(qStr, 'whats the weather like')){
+					//console.log('taking you to weather..');
+					//this.textToSpeech('the weather is cold today');	
+					$.when(this.getWeather())
+									.then(function(){
+									    console.log('weather done');
+									});
+				}
+				else if(this.similar(qStr, 'what is your name')){
+					console.log('my name is robot..');
+					this.textToSpeech('my name is robot   what is yours?');					
+				}
+				else if(this.similar(qStr, 'what is your favorite movie')){
+					console.log('terminator of course');
+					this.textToSpeech('terminator of course. we will be back');					
+				}
+				
+				
+				}
 			}
 		},
 		
@@ -119,6 +131,44 @@ var speechBrowser = function(){
 			 $('#cckw_rm').css("height", "1px");
 			 $('#cckw_rm').css("width", "1px");
 			 $('#cckw_rm').css("margin-left", "-2001px");
+		},
+		
+		getWeather:function(){
+			return $.Deferred(function(dfd){
+				$.simpleWeather({
+					location: 'london, united kingdom',
+					unit: 'f',
+					success: function(weather) {
+						
+						var result = 'The temperature for ' + weather.city + ' in ' + weather.country + ' is currently ' + weather.temp+ ' degrees ';// + weather.units.temp + '. Todays high will be ' + weather.high+' degrees '+weather.units.temp+ ' and todays low will be ' + weather.low+' degrees '+ weather.units.temp;
+						/*
+						html = '<h2>'+weather.city+', '+weather.region+' '+weather.country+'</h2>';
+						html += '<p><strong>Today\'s High</strong>: '+weather.high+'&deg; '+weather.units.temp+' - <strong>Today\'s Low</strong>: '+weather.low+'&deg; '+weather.units.temp+'</p>';
+						html += '<p><strong>Current Temp</strong>: '+weather.temp+'&deg; '+weather.units.temp+'</p>';
+						html += '<p><strong>Condition Code</strong>: '+weather.code+'</p>';
+						html += '<p><strong>Thumbnail</strong>: <img src="'+weather.thumbnail+'"></p>';
+						html += '<p><strong>Wind</strong>: '+weather.wind.direction+' '+weather.wind.speed+' '+weather.units.speed+' <strong>Wind Chill</strong>: '+weather.wind.chill+'</p>';
+						html += '<p><strong>Currently</strong>: '+weather.currently+' - <strong>Forecast</strong>: '+weather.forecast+'</p>';
+						html += '<p><img src="'+weather.image+'"></p>';
+						html += '<p><strong>Humidity</strong>: '+weather.humidity+' <strong>Pressure</strong>: '+weather.pressure+' <strong>Rising</strong>: '+weather.rising+' <strong>Visibility</strong>: '+weather.visibility+'</p>';
+						html += '<p><strong>Heat Index</strong>: '+weather.heatindex+'</p>';
+						html += '<p><strong>Sunrise</strong>: '+weather.sunrise+' - <strong>Sunset</strong>: '+weather.sunset+'</p>';
+						html += '<p><strong>Tomorrow\'s Date</strong>: '+weather.tomorrow.day+' '+weather.tomorrow.date+'<br /><strong>Tomorrow\'s High/Low</strong>: '+weather.tomorrow.high+'/'+weather.tomorrow.low+'<br /><strong>Tomorrow\'s Condition Code</strong>: '+weather.tomorrow.code+'<br /><strong>Tomorrow\'s Forecast</strong>: '+weather.tomorrow.forecast+'<br /> <strong>Tomorrow\'s Image</strong>: '+weather.tomorrow.image+'</p>';
+						html += '<p><strong>Last updated</strong>: '+weather.updated+'</p>';
+						html += '<p><a href="'+weather.link+'">View forecast at Yahoo! Weather</a></p>';*/
+
+						console.log('inner result:' + result);
+						speechBrowser.textToSpeech(result);
+						dfd.resolve();
+					   
+					},
+					error: function(error) {
+					 console.log(error);
+					}
+				});
+				
+			//
+		}).promise();
 		},
 		
 		attachevents: function(){
