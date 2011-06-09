@@ -78,15 +78,34 @@ var speechBrowser = function(){
 			$('#search-results').html('');
 		},
 		
-		loadMedia:function(type,url){
+		loadMedia:function(type,src){
 			switch(type){
 				case 'image':
-					$('#search-results').html("<img src='" + url + "'/>");
+					$('#search-results').html("<img src='" + src + "'/>");
 					break;
+				case 'dictionary':
+					 this.getDictionaryDefinition(src);
+					break;
+				}
+					
+		},
+		
+		getQueryStartsWith: function(needle, haystack){
+			var inputPhrase = needle, 
+				inputTest   = haystack.indexOf(inputPhrase),
+				lenInput    = needle.length,
+				lenHaystack = haystack.length,
+				result		= "";
+			
+			if(inputTest !== -1){
+				result =  haystack.slice(inputTest + lenInput, haystack.length);
+				//console.log('getqueryendswith:' + result);
 			}
+			return result;
 		},
 		
 		query: function(val){
+			//set qStr = val if you want to test without speaking.
 			var qStr = speech.val();
 			
 			this.prepareStage();
@@ -94,20 +113,18 @@ var speechBrowser = function(){
 			console.log(qStr);
 			if(qStr !== null){
 				
-				/*everything here should move to a JSON-dictionary*/
-				
-				/*detect if the user is attempting to search for something*/
-				var searchPhrase="search",searchTest = qStr.indexOf(searchPhrase);
-				if(searchTest !== -1){
-					console.log('you tried a search');
-					/*now let's get everything after search*/
-					var searchQuery = qStr.slice(searchTest+searchPhrase.length, qStr.length);
-					console.log('you searched for:' + searchQuery);
-					this.textToSpeech('i hope these results for' + searchQuery + ' help ');
-					$("#search-results").gSearch({search_text : searchQuery ,count:4,pagination:true});
+				var defineTest = $.trim(this.getQueryStartsWith('define',qStr)),
+					searchTest = $.trim(this.getQueryStartsWith('search',qStr));
 					
-				}else{
+				console.log('def test:' + defineTest);
 				
+				if(searchTest.length > 0){
+					this.textToSpeech('i hope these results for' + searchTest + ' help ');
+					$("#search-results").gSearch({search_text : searchTest ,count:4,pagination:true});
+				}else if(defineTest.length >0){
+					this.getDictionaryDefinition($.trim(defineTest));
+				}else{
+	
 				/*if not performing a search check for other shortcuts supported*/
 				/*all of this logic is currently very dumb. we need proper NLP*/
 				
@@ -134,6 +151,7 @@ var speechBrowser = function(){
 				
 				}
 			}
+			
 		},
 		
 		textToSpeech: function(val){
@@ -146,6 +164,37 @@ var speechBrowser = function(){
 			 $('#cckw_rm').css("height", "1px");
 			 $('#cckw_rm').css("width", "1px");
 			 $('#cckw_rm').css("margin-left", "-2001px");
+		},
+		
+		getDictionaryDefinition: function(src){
+		
+					var word = src,
+						API_BASE_URL = "http://api.wordnik.com/api/",
+					    API_KEY = "fe1c5d72e1c9ab7dde3040c8e6d0ae1063c79bae6ba86a1ce";
+
+					var url = (API_BASE_URL+"word.json/"+encodeURIComponent(word)+"/definitions?callback=?&api_key="+API_KEY);
+
+					  $.getJSON(url, function(response){
+					  	  var the_html = "<h2>Definitions for \"<span>"+word+"</span>\"</h2>";
+						    the_html += "<ul>";
+						    if (response.length>0) {
+						      $.each(response, function(i, definition) {
+									//
+										if(i==0){
+											/*say aloud the first result of the set*/
+											speechBrowser.textToSpeech(definition.text);
+										}
+									//
+						        if (definition.text) { the_html += "<li>"+definition.text+"</li>" };
+						      });
+						    } else {
+						      the_html += "<li><em>No definitions!  Try a different word.</em></li>";
+						    }
+						    the_html += "</ul>";
+							the_html += "</ul>";
+						    $('#search-results').html(the_html);
+					});
+						
 		},
 		
 		getWeather:function(){
@@ -200,6 +249,7 @@ var speechBrowser = function(){
 
 $(function($) {
     speechBrowser.init();
+    //speechBrowser.query('search house');
 });
 
 
