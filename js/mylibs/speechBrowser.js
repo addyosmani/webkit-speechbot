@@ -74,8 +74,23 @@ var speechBrowser = function(){
 		    return z;
 		},
 		
+		prepareStage:function(){
+			$('#search-results').html('');
+		},
+		
+		loadMedia:function(type,url){
+			switch(type){
+				case 'image':
+					$('#search-results').html("<img src='" + url + "'/>");
+					break;
+			}
+		},
+		
 		query: function(val){
 			var qStr = speech.val();
+			
+			this.prepareStage();
+			
 			console.log(qStr);
 			if(qStr !== null){
 				
@@ -88,7 +103,8 @@ var speechBrowser = function(){
 					/*now let's get everything after search*/
 					var searchQuery = qStr.slice(searchTest+searchPhrase.length, qStr.length);
 					console.log('you searched for:' + searchQuery);
-					this.textToSpeech('you searched for:' + searchQuery);
+					this.textToSpeech('i hope these results for' + searchQuery + ' help ');
+					$("#search-results").gSearch({search_text : searchQuery ,count:4,pagination:true});
 					
 				}else{
 				
@@ -99,9 +115,7 @@ var speechBrowser = function(){
 					console.log('hello right back at you!');
 					this.textToSpeech('hello right back at you!');
 				}
-				else if(this.similar(qStr, 'how is the weather today') || this.similar(qStr, 'how is the weather') || this.similar(qStr, 'whats the weather like')){
-					//console.log('taking you to weather..');
-					//this.textToSpeech('the weather is cold today');	
+				else if(this.similar(qStr, 'how is the weather today') || this.similar(qStr, 'how is the weather') || this.similar(qStr, 'whats the weather like')|| this.similar(qStr, 'whats the weather like in london')){	
 					$.when(this.getWeather())
 									.then(function(){
 									    console.log('weather done');
@@ -113,7 +127,8 @@ var speechBrowser = function(){
 				}
 				else if(this.similar(qStr, 'what is your favorite movie')){
 					console.log('terminator of course');
-					this.textToSpeech('terminator of course. we will be back');					
+					this.textToSpeech('terminator of course.');		
+					this.loadMedia('image','http://www.eurocriticsmagazine.com/wp-content/uploads/2008/06/terminator.jpg');			
 				}
 				
 				
@@ -140,8 +155,10 @@ var speechBrowser = function(){
 					unit: 'f',
 					success: function(weather) {
 						
-						var result = 'The temperature for ' + weather.city + ' in ' + weather.country + ' is currently ' + weather.temp+ ' degrees ';// + weather.units.temp + '. Todays high will be ' + weather.high+' degrees '+weather.units.temp+ ' and todays low will be ' + weather.low+' degrees '+ weather.units.temp;
+						var result1 = 'The temperature for ' + weather.city + ' in ' + weather.country + ' is currently ' + weather.temp+ ' degrees ' + ' and i think the high will be ' + weather.high;
+						var result2 = ' Todays high will be ' + weather.high+' degrees '+weather.units.temp+ " and todays low will be " + weather.low+' degrees '+ weather.units.temp;
 						/*
+						baaad string concat, but it's from the API docs. just leaving here for reference.
 						html = '<h2>'+weather.city+', '+weather.region+' '+weather.country+'</h2>';
 						html += '<p><strong>Today\'s High</strong>: '+weather.high+'&deg; '+weather.units.temp+' - <strong>Today\'s Low</strong>: '+weather.low+'&deg; '+weather.units.temp+'</p>';
 						html += '<p><strong>Current Temp</strong>: '+weather.temp+'&deg; '+weather.units.temp+'</p>';
@@ -157,8 +174,9 @@ var speechBrowser = function(){
 						html += '<p><strong>Last updated</strong>: '+weather.updated+'</p>';
 						html += '<p><a href="'+weather.link+'">View forecast at Yahoo! Weather</a></p>';*/
 
-						console.log('inner result:' + result);
-						speechBrowser.textToSpeech(result);
+						console.log('inner result:' + result1);
+						speechBrowser.textToSpeech(result1);
+						//speechBrowser.textToSpeech(result2);
 						dfd.resolve();
 					   
 					},

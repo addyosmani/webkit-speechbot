@@ -85,8 +85,51 @@ body { font-family:Helvetica, Arial, sans-serif; margin:0 auto; padding:0;}
 h1 { font-size:3em; letter-spacing:-1px;}
 h3 { color: #ccc}
 input[type="text"] { font-size:2em; margin:5px}
-
-
+#search-results { padding-top:20px; text-align:left;}
+#search-results li.numbers { float:left; list-stype-type:none; }
+.google-search-results {
+    font-size: 13px;
+    font-family: Tahoma, Geneva, sans-serif;
+    line-height: 1.5;
+}
+.google-search-results .result {
+    margin: 0 0 20px 0;
+}
+.google-search-results a {
+    color: #666;
+    text-decoration: underline; 
+}
+.google-search-results .result .title {
+    font-size: 1.1em;
+}
+.google-search-results .result .url-cache span {
+    color:#282;
+}
+.google-search-results .result .url-cache a {
+    color: #4272db;
+    text-decoration: none;
+}
+.google-search-results .pagination ul {
+    list-style: none;
+    background: none;
+}
+.google-search-results .pagination ul li {
+    list-style: none;
+    background: none;
+    padding: 0;
+    display: inline;
+    margin: 0 5px;
+}
+.google-search-results .pagination ul li a {
+    text-decoration: none;
+}
+.google-search-results .pagination ul li.selected a {
+    color: #000;
+    font-weight: bold;
+}
+.google-search-results .pagination ul li.prev-next a {
+    font-weight: bold;
+}
 
 
 
