@@ -87,7 +87,6 @@ var speechBrowser = function(){
 					 this.getDictionaryDefinition(src);
 					break;
 				}
-					
 		},
 		
 		getQueryStartsWith: function(needle, haystack){
@@ -113,7 +112,7 @@ var speechBrowser = function(){
 		
 		query: function(val){
 			//set qStr = val if you want to test without speaking.
-			var qStr = speech.val();
+			var qStr = speech.val() || val;
 			var stage = $('#search-results');
 			
 			this.prepareStage();
@@ -126,7 +125,6 @@ var speechBrowser = function(){
 					frenchTest = $.trim(this.getQueryStartsWith('french', qStr)),
 					germanTest = $.trim(this.getQueryStartsWith('german', qStr));
 					
-				console.log('def test:' + defineTest);
 				
 				if(searchTest.length > 0){
 					this.textToSpeech('i hope these results for' + searchTest + ' help ');
