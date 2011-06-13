@@ -106,7 +106,8 @@ var speechBrowser = function(){
 		
 		query: function(val){
 			//set qStr = val if you want to test without speaking.
-			var qStr = speech.val();
+			var qStr = val;//speech.val();
+			var stage = $('#search-results');
 			
 			this.prepareStage();
 			
@@ -114,15 +115,32 @@ var speechBrowser = function(){
 			if(qStr !== null){
 				
 				var defineTest = $.trim(this.getQueryStartsWith('define',qStr)),
-					searchTest = $.trim(this.getQueryStartsWith('search',qStr));
+					searchTest = $.trim(this.getQueryStartsWith('search', qStr)),
+					frenchTest = $.trim(this.getQueryStartsWith('french', qStr)),
+					germanTest = $.trim(this.getQueryStartsWith('german', qStr));
 					
 				console.log('def test:' + defineTest);
 				
 				if(searchTest.length > 0){
 					this.textToSpeech('i hope these results for' + searchTest + ' help ');
-					$("#search-results").gSearch({search_text : searchTest ,count:4,pagination:true});
+					stage.gSearch({search_text : searchTest ,count:4,pagination:true});
 				}else if(defineTest.length >0){
 					this.getDictionaryDefinition($.trim(defineTest));
+				}else if(translateTest.length >0){
+					
+					stage.html(qStr);
+					stage.translate('en','fr', function(){ 
+						speechBrowser.textToSpeech(	'the french translation is ' +   stage.html() );					
+					});
+				
+				}else if(translateTest.length >0){
+					
+					stage.html(qStr);
+					stage.translate('en','de', function(){ 
+						speechBrowser.textToSpeech(	'the german translation is ' +   stage.html() );					
+					});
+					
+					
 				}else{
 	
 				/*if not performing a search check for other shortcuts supported*/
@@ -249,7 +267,7 @@ var speechBrowser = function(){
 
 $(function($) {
     speechBrowser.init();
-    //speechBrowser.query('search house');
+    speechBrowser.query('french house');
 });
 
 
