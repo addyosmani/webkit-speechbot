@@ -104,9 +104,16 @@ var speechBrowser = function(){
 			return result;
 		},
 		
+		getTranslation: function(stage, input, language, mention){
+			stage.html(input);
+			stage.translate('en', language , function(){ 
+				speechBrowser.textToSpeech(	'the ' + mention + ' translation is ' +   stage.html() );					
+			});
+		},
+		
 		query: function(val){
 			//set qStr = val if you want to test without speaking.
-			var qStr = val;//speech.val();
+			var qStr = speech.val();
 			var stage = $('#search-results');
 			
 			this.prepareStage();
@@ -126,21 +133,10 @@ var speechBrowser = function(){
 					stage.gSearch({search_text : searchTest ,count:4,pagination:true});
 				}else if(defineTest.length >0){
 					this.getDictionaryDefinition($.trim(defineTest));
-				}else if(translateTest.length >0){
-					
-					stage.html(qStr);
-					stage.translate('en','fr', function(){ 
-						speechBrowser.textToSpeech(	'the french translation is ' +   stage.html() );					
-					});
-				
-				}else if(translateTest.length >0){
-					
-					stage.html(qStr);
-					stage.translate('en','de', function(){ 
-						speechBrowser.textToSpeech(	'the german translation is ' +   stage.html() );					
-					});
-					
-					
+				}else if(frenchTest.length >0){
+					this.getTranslation(stage, qStr, 'fr', 'french');				
+				}else if(germanTest.length >0){
+					this.getTranslation(stage, qStr, 'de', 'german');
 				}else{
 	
 				/*if not performing a search check for other shortcuts supported*/
@@ -267,7 +263,7 @@ var speechBrowser = function(){
 
 $(function($) {
     speechBrowser.init();
-    speechBrowser.query('french house');
+    //speechBrowser.query('french house');
 });
 
 
