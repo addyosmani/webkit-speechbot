@@ -98,7 +98,6 @@ var speechBrowser = function(){
 			
 			if(inputTest !== -1){
 				result =  haystack.slice(inputTest + lenInput, haystack.length);
-				//console.log('getqueryendswith:' + result);
 			}
 			return result;
 		},
@@ -132,9 +131,9 @@ var speechBrowser = function(){
 				}else if(defineTest.length >0){
 					this.getDictionaryDefinition($.trim(defineTest));
 				}else if(frenchTest.length >0){
-					this.getTranslation(stage, qStr, 'fr', 'french');				
+					this.getTranslation(stage, $.trim(frenchTest), 'fr', 'french');				
 				}else if(germanTest.length >0){
-					this.getTranslation(stage, qStr, 'de', 'german');
+					this.getTranslation(stage, $.trim(germanTest), 'de', 'german');
 				}else{
 	
 				/*if not performing a search check for other shortcuts supported*/
@@ -154,10 +153,14 @@ var speechBrowser = function(){
 					console.log('my name is robot..');
 					this.textToSpeech('my name is robot   what is yours?');					
 				}
+				else if(this.similar(qStr, 'did you enjoy yourself')){
+					this.textToSpeech('hell yes');	
+					this.loadMedia('image','img/yeah.jpg');
+				}
 				else if(this.similar(qStr, 'what is your favorite movie')){
 					console.log('terminator of course');
 					this.textToSpeech('terminator of course.');		
-					this.loadMedia('image','http://www.eurocriticsmagazine.com/wp-content/uploads/2008/06/terminator.jpg');			
+					this.loadMedia('image','img/terminator.jpg');			
 				}
 				
 				
@@ -167,26 +170,19 @@ var speechBrowser = function(){
 		},
 		
 		textToSpeech: function(val){
-
-			/*currently using http://chachakawooka.com/blog/cckw-text-to-speech-api/ - I may need to arrange some sort of licensing deal if many people intend on playing with this.*/
-			$('<iframe id="cckwTTS" name="cckwTTS" style="width:0px; height:0px; border: 0px" src="http://tts.chachakawooka.com/index.php?TEXT=' + val + '"></iframe>').appendTo('body');
-
-			$('<embed id="cckw_rm" type="application/x-shockwave-flash" flashvars="audioUrl=http://tts.chachakawooka.com/mp3.php?TEXT=' + val + '&autoPlay=true" src="http://www.google.com/reader/ui/3523697345-audio-player.swf" width=”1? height=”1? quality="best"></embed>').appendTo('body');
-
-			 $('#cckw_rm').css("height", "1px");
-			 $('#cckw_rm').css("width", "1px");
-			 $('#cckw_rm').css("margin-left", "-2001px");
+			 speak(val, { amplitude: 100, wordgap: 1, pitch: 50, speed:  160 });
 		},
 		
 		getDictionaryDefinition: function(src){
 		
 					var word = src,
-						API_BASE_URL = "http://api.wordnik.com/api/",
+						API_BASE_URL = "http://api.wordnik.com//v4/",
 					    API_KEY = "fe1c5d72e1c9ab7dde3040c8e6d0ae1063c79bae6ba86a1ce";
 
 					var url = (API_BASE_URL+"word.json/"+encodeURIComponent(word)+"/definitions?callback=?&api_key="+API_KEY);
 
 					  $.getJSON(url, function(response){
+					  	console.log(response);
 					  	  var the_html = "<h2>Definitions for \"<span>"+word+"</span>\"</h2>";
 						    the_html += "<ul>";
 						    if (response.length>0) {
@@ -212,32 +208,15 @@ var speechBrowser = function(){
 		getWeather:function(){
 			return $.Deferred(function(dfd){
 				$.simpleWeather({
-					location: 'london, united kingdom',
-					unit: 'f',
+					//let's get this to use geolocation again soon.
+
+					//location: 'london',
+					location: 'toronto',
+					unit: 'c',
 					success: function(weather) {
 						
 						var result1 = 'The temperature for ' + weather.city + ' in ' + weather.country + ' is currently ' + weather.temp+ ' degrees ' + ' and i think the high will be ' + weather.high;
-						var result2 = ' Todays high will be ' + weather.high+' degrees '+weather.units.temp+ " and todays low will be " + weather.low+' degrees '+ weather.units.temp;
-						/*
-						baaad string concat, but it's from the API docs. just leaving here for reference.
-						html = '<h2>'+weather.city+', '+weather.region+' '+weather.country+'</h2>';
-						html += '<p><strong>Today\'s High</strong>: '+weather.high+'&deg; '+weather.units.temp+' - <strong>Today\'s Low</strong>: '+weather.low+'&deg; '+weather.units.temp+'</p>';
-						html += '<p><strong>Current Temp</strong>: '+weather.temp+'&deg; '+weather.units.temp+'</p>';
-						html += '<p><strong>Condition Code</strong>: '+weather.code+'</p>';
-						html += '<p><strong>Thumbnail</strong>: <img src="'+weather.thumbnail+'"></p>';
-						html += '<p><strong>Wind</strong>: '+weather.wind.direction+' '+weather.wind.speed+' '+weather.units.speed+' <strong>Wind Chill</strong>: '+weather.wind.chill+'</p>';
-						html += '<p><strong>Currently</strong>: '+weather.currently+' - <strong>Forecast</strong>: '+weather.forecast+'</p>';
-						html += '<p><img src="'+weather.image+'"></p>';
-						html += '<p><strong>Humidity</strong>: '+weather.humidity+' <strong>Pressure</strong>: '+weather.pressure+' <strong>Rising</strong>: '+weather.rising+' <strong>Visibility</strong>: '+weather.visibility+'</p>';
-						html += '<p><strong>Heat Index</strong>: '+weather.heatindex+'</p>';
-						html += '<p><strong>Sunrise</strong>: '+weather.sunrise+' - <strong>Sunset</strong>: '+weather.sunset+'</p>';
-						html += '<p><strong>Tomorrow\'s Date</strong>: '+weather.tomorrow.day+' '+weather.tomorrow.date+'<br /><strong>Tomorrow\'s High/Low</strong>: '+weather.tomorrow.high+'/'+weather.tomorrow.low+'<br /><strong>Tomorrow\'s Condition Code</strong>: '+weather.tomorrow.code+'<br /><strong>Tomorrow\'s Forecast</strong>: '+weather.tomorrow.forecast+'<br /> <strong>Tomorrow\'s Image</strong>: '+weather.tomorrow.image+'</p>';
-						html += '<p><strong>Last updated</strong>: '+weather.updated+'</p>';
-						html += '<p><a href="'+weather.link+'">View forecast at Yahoo! Weather</a></p>';*/
-
-						console.log('inner result:' + result1);
 						speechBrowser.textToSpeech(result1);
-						//speechBrowser.textToSpeech(result2);
 						dfd.resolve();
 					   
 					},
