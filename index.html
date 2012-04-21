@@ -30,8 +30,16 @@
 			<input name="speechQuery" id="speechQuery" type="text" x-webkit-speech speech error onwebkitspeechchange="speechBrowser.query(true);" />
 <!--
 			<h3>Supports: hello, how is the weather? (variations), what is your name?, search [something something], whats your favorite movie?, define [something], french [something], german [something]</h3>-->
-        <h3>Supports: hello (variations), what is your name?, search [something something], whats your favorite movie?, define [something], french [something], german [something]. Did you enjoy yourself?</h3>
+        <h3>Supports conversation like: hello (variations), what is your name?, search [something something], whats your favorite movie?, define [something], french [something], take a picture. Did you enjoy yourself?</h3>
         <div id="audio"></div>
+
+        <div id="gum-holder">
+          <div id="webcam"></div>
+            <canvas id="canvas"  height="240" width="320"></canvas>
+            <canvas id="output"  height="426" width="515"></canvas>
+        </div>
+
+
 		</form>
 		<div class="search-case">
 			<div id="search-results"></div>
@@ -42,8 +50,6 @@
     </footer>
   </div> <!-- eo #container -->
   
-
-
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.js"></script>
   <script>window.jQuery || document.write("<script src='js/libs/jquery-1.7.1.min.js'>\x3C/script>")</script>
   <script src="js/mylibs/speechBrowser.js"></script>
@@ -68,6 +74,14 @@
 <script type="text/javascript">google.load("search", "1");</script>
 <script type="text/javascript" src="js/mylibs/gsearch.js"></script>
 <script type="text/javascript" src="js/mylibs/jquery.translate.js"></script>
+
+
+<script type="text/javascript" src="js/getUserMedia.js/dist/getUserMedia.min.js"></script>
+<script type="text/javascript" src="js/getUserMedia.js/face-detection-demo/js/glasses/ccv.js"></script>
+<script type="text/javascript" src="js/getUserMedia.js/face-detection-demo/js/glasses/face.js"></script>
+<script type="text/javascript" src="js/getUserMedia.js/face-detection-demo/js/glasses/stackblur.js"></script>
+<script type="text/javascript" src="js/getUserMedia.js/face-detection-demo/js/demo.js"></script>
+
 
 
 

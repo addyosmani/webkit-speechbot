@@ -162,6 +162,11 @@ var speechBrowser = function(){
 					this.textToSpeech('terminator of course.');		
 					this.loadMedia('image','img/terminator.jpg');			
 				}
+				else if(this.similar(qStr, 'take a picture') || this.similar(qStr, 'take another picture')){
+					this.textToSpeech('I hope you like your picture.');		
+					window.getSnapshot();			
+				}
+				
 				
 				
 				}
